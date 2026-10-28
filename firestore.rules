@@ -1,0 +1,104 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isSuperAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.email == 'superadmin@foodcart.com' || 
+         request.auth.token.role == 'SUPER_ADMIN');
+    }
+
+    function isFranchiseOwner(franchiseId) {
+      return isAuthenticated() && 
+        (request.auth.token.franchiseId == franchiseId || isSuperAdmin());
+    }
+
+    function isRestaurantOwner(restaurantId) {
+      return isAuthenticated() && 
+        (request.auth.token.restaurantId == restaurantId || isSuperAdmin());
+    }
+
+    function isDeliveryBoy(riderId) {
+      return isAuthenticated() && request.auth.uid == riderId;
+    }
+
+    function isCustomer(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // 1. Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isCustomer(userId) || isSuperAdmin();
+    }
+
+    // 2. Franchises collection
+    match /franchises/{franchiseId} {
+      allow read: if isAuthenticated();
+      allow create, delete: if isSuperAdmin();
+      allow update: if isFranchiseOwner(franchiseId) || isSuperAdmin();
+    }
+
+    // 3. Restaurants / Food Carts collection
+    match /restaurants/{restaurantId} {
+      allow read: if true; // Public catalog for customers
+      allow create: if isAuthenticated();
+      allow update: if isRestaurantOwner(restaurantId) || isSuperAdmin();
+      allow delete: if isSuperAdmin();
+    }
+
+    // 4. Menu Items collection
+    match /menuItems/{menuItemId} {
+      allow read: if true; // Public menu for customers
+      allow create, update, delete: if isAuthenticated() && (
+        isRestaurantOwner(request.resource.data.restaurantId) || isSuperAdmin()
+      );
+    }
+
+    // 5. Orders collection (High throughput & sharded indexing)
+    match /orders/{orderId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == resource.data.customerId ||
+        request.auth.uid == resource.data.deliveryBoyId ||
+        request.auth.token.restaurantId == resource.data.restaurantId ||
+        isSuperAdmin()
+      );
+      allow create: if isAuthenticated() && request.resource.data.customerId == request.auth.uid;
+      allow update: if isAuthenticated() && (
+        request.auth.uid == resource.data.customerId ||
+        request.auth.uid == resource.data.deliveryBoyId ||
+        request.auth.token.restaurantId == resource.data.restaurantId ||
+        isSuperAdmin()
+      );
+    }
+
+    // 6. Delivery Boys collection
+    match /deliveryBoys/{riderId} {
+      allow read: if isAuthenticated();
+      allow write: if isDeliveryBoy(riderId) || isSuperAdmin();
+    }
+
+    // 7. Payments collection
+    match /payments/{paymentId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == resource.data.customerId || isSuperAdmin()
+      );
+      allow create: if isAuthenticated();
+      allow update: if isSuperAdmin();
+    }
+
+    // 8. Reviews collection
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() && (
+        request.auth.uid == resource.data.userId || isSuperAdmin()
+      );
+    }
+  }
+}

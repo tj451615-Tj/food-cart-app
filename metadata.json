@@ -1,0 +1,6 @@
+{
+  "name": "Food Cart",
+  "description": "Scalable food delivery app with dedicated portals for Super Admin, Franchisees, Restaurants, Delivery Partners, and Customers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

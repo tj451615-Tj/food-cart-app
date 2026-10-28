@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Food Cloche and Food Cart Emblem in Safe Area (centered at 54,54) -->
+    <!-- Cloche knob -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M51,32h6c1.1,0 2,0.9 2,2v2h-10v-2c0,-1.1 0.9,-2 2,-2z" />
+    <!-- Cloche Dome -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,37c-12.7,0 -23,9.5 -24,21.5h48C77,46.5 66.7,37 54,37z" />
+    <!-- Cloche Tray Base -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M27,60.5h54c1.1,0 2,0.9 2,2l0,1c0,0.6 -0.4,1 -1,1H26c-0.6,0 -1,-0.4 -1,-1l0,-1c0,-1.1 0.9,-2 2,-2z" />
+    <!-- Cart Body / Basket Base -->
+    <path
+        android:fillColor="#FFE600"
+        android:pathData="M33,66h42l-3,8H36z" />
+    <!-- Cart Wheels -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M40,78a4,4 0 1,0 0.01,0 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M68,78a4,4 0 1,0 0.01,0 Z" />
+    <!-- Delivery Speed Lines -->
+    <path
+        android:fillColor="#80FFFFFF"
+        android:pathData="M21,48h5v2h-5z M18,53h7v2h-7z M23,58h4v2h-4z" />
+</vector>
