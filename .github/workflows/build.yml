@@ -5,20 +5,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: ls -la
+      - run: |
+          if [ -f "pubspec.yaml" ]; then
+            echo "PROJECT_DIR=." >> $GITHUB_ENV
+          else
+            SUB=$(find . -name "pubspec.yaml" -type f | head -1 | xargs dirname)
+            echo "PROJECT_DIR=$SUB" >> $GITHUB_ENV
+            echo "Found project in $SUB"
+          fi
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
           channel: 'stable'
       - run: flutter pub get
+        working-directory: ${{ env.PROJECT_DIR }}
       - run: flutter build apk --release
+        working-directory: ${{ env.PROJECT_DIR }}
       - run: flutter build appbundle --release
+        working-directory: ${{ env.PROJECT_DIR }}
       - uses: actions/upload-artifact@v4
         with:
           name: Food-Cart-Build
           path: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/bundle/release/app-release.aab
+            ${{ env.PROJECT_DIR }}/build/app/outputs/flutter-apk/app-release.apk
+            ${{ env.PROJECT_DIR }}/build/app/outputs/bundle/release/app-release.aab
